@@ -29,11 +29,11 @@ const postBlog = async (req,res)=>{
         })
     }
 }
-const getBlog = async (req,res)=>{
+const getBlogs = async (req,res)=>{
     try{
         const data =await Blog.getAll();
         console.log(data)
-        return res.json({
+        return res.status(200).json({
             message:"se encontraron los datos correctamente",
             data:data
         })
@@ -92,7 +92,7 @@ const putBlog = async(req,res)=>{
 
 module.exports = {
     postBlog,
-    getBlog,
+    getBlogs,
     putBlog,
     deleteBlog,
 }

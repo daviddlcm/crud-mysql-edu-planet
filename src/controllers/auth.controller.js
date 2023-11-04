@@ -3,9 +3,10 @@ const jwt = require("jsonwebtoken")
 const signUp = async(req,res) =>{
     const result = await User.findUsername(req.body.usuario)
     if(result){
-        return res.json({
+        return res.status(200).json({
             message:"usuario ya agregado"
         })
+    
     }
     const user = {
         usuario: req.body.usuario,
@@ -16,9 +17,9 @@ const signUp = async(req,res) =>{
         expiresIn: 86400 // son 24 horas
     })
 
-    return res.json({
+    return res.status(200).json({
         message:"sign up",
-        data:token
+        token:token
     })
 }
 const signIn = async(req,res)=>{
@@ -37,9 +38,9 @@ const signIn = async(req,res)=>{
     const token = jwt.sign({id:usuarioFound.id_usuario},process.env.SECRET    ,{
         expiresIn: 86400
     })
-    return res.json({
+    return res.status(200).json({
         message:"sign in",
-        data: token,
+        token: token,
     })
 }
 module.exports = {

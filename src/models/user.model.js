@@ -14,7 +14,7 @@ class User{
         return result[0][0]
     }
     static async encryptPassword(password){
-        const salt = await bcrypt.genSalt(10)
+        const salt = await bcrypt.genSalt(process.env.SALT)
         return await bcrypt.hash(password,salt)
     }
     static async comparePassword(password,receivedPassword){
