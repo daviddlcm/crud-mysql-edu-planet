@@ -6,9 +6,11 @@ const fileUpload = require('express-fileupload');
 const PORT = process.env.PORT;
 
 const blogRouter = require("./v1/routes/blog.routes")
+const authRouter = require("./v1/routes/auth.routes")
+
 
 app.use(express.json())
-app.use("/api/v1", blogRouter)
+app.use("/api/v1", blogRouter, authRouter)
 app.use(express.urlencoded({extended:false}))
 
 

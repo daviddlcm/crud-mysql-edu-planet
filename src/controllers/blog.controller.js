@@ -11,10 +11,11 @@ const postBlog = async (req,res)=>{
             await fs.unlink(req.file.path)
         }
         const blog = {
-            id_usuario: req.body.id_usuario,
+            created_by: req.body.id_usuario,
             titulo: req.body.titulo,
             imagen: imagen.secure_url,
             contenido: req.body.contenido,
+            date: new Date(),
         }
         Blog.createBlog(blog)
         return res.status(201).json({
@@ -46,10 +47,9 @@ const getBlog = async (req,res)=>{
 const deleteBlog = (req,res)=>{
     try{
         const blog={
-            delete: true,
             date: new Date(),
             id_blog: req.params.id,
-            id_usuario: req.body.id_usuario,
+            deleted_by: req.body.id_usuario,
         }
         Blog.delete(blog)
         return res.status(200).json({
@@ -71,7 +71,7 @@ const putBlog = async(req,res)=>{
         }
         const blog = {
             id_blog: req.params.id,
-            id_usuario: req.body.id_usuario,
+            update_by: req.body.id_usuario,
             titulo: req.body.titulo || null,
             imagen_url: imagen.secure_url || null,
             contenido: req.body.contenido || null,
