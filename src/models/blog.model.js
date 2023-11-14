@@ -1,41 +1,86 @@
 const db = require("../configs/db.config");
 
-class Blog{
-    static createBlog(blog){
-        const sql = "INSERT INTO blog(titulo,url_imagen,texto_contenido,created_by,created_at) VALUES (?,?,?,?,?)";
-        db.query(sql,[blog.titulo,blog.imagen,blog.contenido,blog.created_by,blog.date],(error,results)=>{
-            if(error){
-                console.log(error)
-            }else{
-                console.log(results)
-            }
-        })
+class Blog {
+    constructor({ id, titulo, imagen, contenido, createdAt, createdBy, updatedAt, updateBy, deleted, deletedAt, deletedBy }) {
+        this.id = id;
+        this.titulo = titulo;
+        this.imagen = imagen;
+        this.contenido = contenido;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updateBy;
+        this.deleted = deleted;
+        this.deletedAt = deletedAt;
+        this.deletedBy = deletedBy;
     }
-    static async getAll(){
-        const sql= "SELECT id_blog,titulo,url_imagen,texto_contenido,created_by,created_at,updated_at,updated_by FROM blog where deleted=false;"
-        const results = await db.promise().query(sql);
-        return results[0];
+    async save() {
+        const connection = await db.createConnection()
+        const [result] = await connection.execute("INSERT INTO blog(titulo,url_imagen,texto_contenido,created_by,created_at) VALUES (?,?,?,?,?)", [this.titulo, this.imagen, this.contenido, this.createdBy, this.createdAt])
+        connection.end()
+        if (result.insertId == 0) {
+            throw new Error("No se pudo crear el blog")
+        }
+        this.id = result.insertId
     }
-    static put(blog){
-        const sql= "UPDATE blog SET titulo = ?, url_imagen= ? ,texto_contenido= ? ,updated_at= ?, updated_by= ? WHERE id_blog = ?";
-        db.query(sql,[blog.titulo,blog.imagen_url,blog.contenido,blog.updated,blog.update_by,blog.id_blog],(error,result)=>{
-            if(error){
-                console.log(error)
-            }
-            else{
-                console.log(result)
-            }
-        })
+
+    static async getAll() {
+        const connection = await db.createConnection();
+        const [rows] = await connection.query("SELECT id_blog,titulo,url_imagen,texto_contenido,created_by,created_at,updated_at,updated_by FROM blog WHERE deleted = false");
+        connection.end();
+        return rows;
     }
-    static delete(blog){
-        const sql="UPDATE blog SET deleted = true , deleted_at= ? , deleted_by= ? WHERE id_blog = ? ;";
-        db.query(sql,[blog.date,blog.deleted_by,blog.id_blog],(error,result)=>{
-            if(error){
-                console.log(error)
-            }else{
-                console.log(result)
-            }
-        })
+
+    static async put(blog) {
+        const connection = await db.createConnection()
+
+        const updatedAt = new Date()
+
+        const [result] = await connection.execute("UPDATE blog SET titulo = ?, url_imagen= ? ,texto_contenido= ? ,updated_at= ?, updated_by= ? WHERE id_blog = ?", [blog.titulo, blog.imagen, blog.contenido, updatedAt, blog.updatedBy, blog.id]);
+
+        connection.end()
+
+        if (result.affectedRows == 0) {
+            throw new Error("No se pudo actualizar el blog")
+        }
+
+        return
+    }
+
+    static async delete(blog) {
+        const connection = await db.createConnection();
+        const deletedAt = new Date();
+        const [result] = await connection.execute("UPDATE blog SET deleted = true, deleted_at = ?, deleted_by = ? WHERE id_blog = ?", [deletedAt, blog.deletedBy, blog.id]);
+
+        connection.end()
+
+        if (result.affectedRows == 0) {
+            throw new Error("No se pudo eliminar el blog")
+        }
+
+        return;
+    }
+
+    static async getById(id) {
+        const connection = await db.createConnection()
+        const [rows] = await connection.execute("SELECT id_blog,titulo,url_imagen,texto_contenido,created_by,created_at,updated_at,updated_by FROM blog WHERE id_blog = ? AND deleted = 0", [id])
+        
+        connection.end()
+
+        if(rows.length > 0){
+            const row = rows[0]
+            return new Blog({
+                id: row.id_blog,
+                titulo: row.titulo,
+                imagen: row.url_imagen,
+                contenido: row.texto_contenido,
+                createdAt: row.created_at,
+                createdBy: row.created_by,
+                updatedAt: row.updated_at,
+                updateBy: row.updated_by,
+            })
+        }
+        return null
     }
 }
 module.exports = Blog;

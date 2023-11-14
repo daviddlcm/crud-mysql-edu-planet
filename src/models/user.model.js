@@ -9,9 +9,12 @@ class User{
         return result
     }
     static async findUsername(username){
-        const sql = "SELECT id_usuario,username,password FROM user WHERE username=?"
-        const result = await db.promise().query(sql,[username])
-        return result[0][0]
+        const connection = await db.createConnection()
+        const [[rows]] = await connection.query("SELECT id_usuario,username,password FROM user WHERE username=?",[username])
+
+        connection.end()
+
+        return rows
     }
     static async encryptPassword(password){
         const salt = await bcrypt.genSalt(process.env.SALT)
