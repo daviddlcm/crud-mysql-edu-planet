@@ -6,12 +6,13 @@ const postBlog = async (req,res)=>{
     try {
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         console.log(token)
-        console.log(req.file.path)
+
         let imagen=null
-        if(req.file){
-            imagen = await uploadImage(req.file.path)
-            await fs.unlink(req.file.path)
-        }
+        if(req.files?.imagen){
+            imagen=await uploadImage(req.files.imagen.tempFilePath)
+            await fs.unlink(req.files.imagen.tempFilePath)
+        } 
+
         const blog = new Blog({
             createdBy: token.id,
             titulo: req.body.titulo,
@@ -22,7 +23,6 @@ const postBlog = async (req,res)=>{
         await blog.save()
         return res.status(201).json({
             message: "se creo el blog correctamente",
-            data:blog,
         })
     } catch (error) {
         return res.status(500).json({
@@ -67,13 +67,17 @@ const deleteBlog = (req,res)=>{
 }
 const putBlog = async(req,res)=>{
     try{
+
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         console.log(token)
+
+
         let imagen=null
-        if(req.file){
-            imagen = await uploadImage(req.file.path)
-            await fs.unlink(req.file.path)
-        }
+        if(req.files?.imagen){
+            imagen=await uploadImage(req.files.imagen.tempFilePath)
+            await fs.unlink(req.files.imagen.tempFilePath)
+        } 
+
         const blog = {
             id: req.params.id,
             updatedBy: token.id,
