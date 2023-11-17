@@ -4,10 +4,9 @@ const fs=require("fs-extra")
 const { uploadImage } = require("../configs/cloudinary.config")
 const jwt = require("jsonwebtoken")
 
-
 const getVideos = async (req,res)=>{
     try{
-        const multimedias = await Video.getAll()
+        const multimedias = await Video.getAll(req.params.id)
         return res.status(200).json({
             message:"Se obtuvieron los multimedias",
             data: multimedias
@@ -15,6 +14,23 @@ const getVideos = async (req,res)=>{
     }catch(error){
         return res.status(500).json({
             message:"error al obtener los multimedias",
+            error: error.message,
+        })
+    }
+}
+const getById = async (req,res)=>{
+    try{
+        const video = await Video.getById(req.params.id)
+        if(!video) return res.status(404).json({
+            message:"No se encontro el video"
+        })
+        return res.status(200).json({
+            message:"Se obtuvo el video",
+            data: video
+        })
+    }catch(error){
+        return res.status(500).json({
+            message:"error al obtener el video",
             error: error.message,
         })
     }
@@ -35,6 +51,7 @@ const createVideo = async (req,res)=>{
             link:req.body.link,
             idUsuario: token.id,
             createdBy: token.id,
+            idTipoVideo: req.body.idTipoVideo,
         })
         await multimedia.save()
         return res.status(200).json({
@@ -76,7 +93,7 @@ const putVideo = async (req,res)=>{
         if(req.files?.imagen){
             imagen=await uploadImage(req.files.imagen.tempFilePath)
             await fs.unlink(req.files.imagen.tempFilePath)
-        } 
+        }
         const multimedia = {
             id: req.params.id,
             idUsuario: token.id,
@@ -96,9 +113,11 @@ const putVideo = async (req,res)=>{
         })
     }
 }
+
 module.exports = {
     getVideos,
     createVideo,
     deleteVideo,
     putVideo,
+    getById,
 }
