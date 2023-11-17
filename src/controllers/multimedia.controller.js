@@ -1,13 +1,13 @@
 require("dotenv").config()
-const Multimedia = require("../models/multimedia.model")
+const Video = require("../models/video.model")
 const fs=require("fs-extra")
 const { uploadImage } = require("../configs/cloudinary.config")
 const jwt = require("jsonwebtoken")
 
 
-const getMultimedias = async (req,res)=>{
+const getVideos = async (req,res)=>{
     try{
-        const multimedias = await Multimedia.getAll()
+        const multimedias = await Video.getAll()
         return res.status(200).json({
             message:"Se obtuvieron los multimedias",
             data: multimedias
@@ -20,7 +20,7 @@ const getMultimedias = async (req,res)=>{
     }
 }
 
-const createMultimedia = async (req,res)=>{
+const createVideo = async (req,res)=>{
     try{
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         let imagen=null
@@ -28,7 +28,7 @@ const createMultimedia = async (req,res)=>{
             imagen=await uploadImage(req.files.imagen.tempFilePath)
             await fs.unlink(req.files.imagen.tempFilePath)
         } 
-        const multimedia = new Multimedia({
+        const multimedia = new Video({
             miniatura: imagen.secure_url,
             titulo:req.body.titulo,
             descripcion:req.body.descripcion,
@@ -49,14 +49,14 @@ const createMultimedia = async (req,res)=>{
     }
 }
 
-const deleteMultimedia = async (req,res)=>{
+const deleteVideo = async (req,res)=>{
     try{
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         const multimedia = {
             id: req.params.id,
             idUsuario: token.id,
         }
-        await Multimedia.deleteMultimedia(multimedia)
+        await Video.deleteVideo(multimedia)
 
         return res.status(200).json({
             message:"Se elimino el multimedia",
@@ -69,7 +69,7 @@ const deleteMultimedia = async (req,res)=>{
     }
 }
 
-const putMultimedia = async (req,res)=>{
+const putVideo = async (req,res)=>{
     try{
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         let imagen=null
@@ -85,7 +85,7 @@ const putMultimedia = async (req,res)=>{
             descripcion:req.body.descripcion,
             link:req.body.link,
         }
-        await Multimedia.putMultimedia(multimedia)
+        await Video.putVideo(multimedia)
         return res.status(200).json({
             message:"Se actualizo la multimedia",
         })
@@ -97,8 +97,8 @@ const putMultimedia = async (req,res)=>{
     }
 }
 module.exports = {
-    getMultimedias,
-    createMultimedia,
-    deleteMultimedia,
-    putMultimedia,
+    getVideos,
+    createVideo,
+    deleteVideo,
+    putVideo,
 }

@@ -6,7 +6,6 @@ const postBlog = async (req,res)=>{
     try {
         const token = jwt.verify(req.headers.token,process.env.SECRET)
         console.log(token)
-
         let imagen=null
         if(req.files?.imagen){
             imagen=await uploadImage(req.files.imagen.tempFilePath)

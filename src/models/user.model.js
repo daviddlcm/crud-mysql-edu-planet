@@ -3,9 +3,12 @@ const bcrypt = require("bcrypt")
 class User{
 
     static async createUser(user){
-        const sql = "INSERT INTO user(username,password) VALUES( ? , ? )"
-        await db.promise().query(sql,[user.usuario,user.password])
+        const connection = await db.createConnection()
+        const [results] = await connection.query("INSERT INTO user(username,password) VALUES( ? , ? )",[user.usuario,user.password])
         const result = await User.findUsername(user.usuario)
+
+        connection.end()
+        
         return result
     }
     static async findUsername(username){

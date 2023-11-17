@@ -1,5 +1,5 @@
 const db = require("../configs/db.config")
-class Multimedia{
+class Video{
     constructor({id,miniatura,titulo,descripcion,link,idUsuario,createdBy,createdAt,deleted,deletedBy,deletedAt,updatedAt,updatedBy}){
         this.id = id
         this.miniatura = miniatura
@@ -35,7 +35,7 @@ class Multimedia{
         }
         this.id = result.insertId
     }
-    static async deleteMultimedia(multimedia){
+    static async deleteVideo(multimedia){
         const connection = await db.createConnection()
 
         const deletedAt = new Date()
@@ -51,7 +51,7 @@ class Multimedia{
         return;
     }
 
-    static async putMultimedia(multimedia){
+    static async putVideo(multimedia){
         const connection = await db.createConnection()
 
         const updatedAt = new Date()
@@ -66,4 +66,4 @@ class Multimedia{
         return 
     }
 }
-module.exports = Multimedia
+module.exports = Video
