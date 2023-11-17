@@ -82,5 +82,16 @@ class Blog {
         }
         return null
     }
+    static async deleteDataTable(){
+        const connection = await db.createConnection();
+        const [result] = await connection.execute("DELETE FROM blog");
+        
+        connection.end()
+
+        if (result.affectedRows == 0) {
+            throw new Error("No se pudo eliminar el blog")
+        }
+        return;
+    }
 }
 module.exports = Blog;

@@ -93,5 +93,33 @@ class Video{
         }
         return null   
     }
+    static async truncateTable(){
+        const connection = await db.createConnection()
+        const [result] = await connection.execute("DELETE FROM tipo_video")
+        connection.end()
+        if(result.affectedRows == 0){
+            throw new Error("No se pudo eliminar los datos de la tabla")
+        }
+        return
+    }
+    static async truncateTableVideos(){
+        const connection = await db.createConnection()
+        const [result] = await connection.execute("DELETE FROM video")
+        connection.end()
+        if(result.affectedRows == 0){
+            throw new Error("No se pudo eliminar los datos de la tabla")
+        }
+        return
+    }
+    static async create({id_tipo_video,tipo}){
+        const connection = await db.createConnection()
+        const [result] = await connection.execute("INSERT INTO tipo_video(id_tipo_video,tipo) VALUES (?,?)",[id_tipo_video,tipo])
+
+        connection.end()
+
+        if(result.affectedRows == 0){
+            throw new Error("No se pudo crear el tipo de video")
+        }
+    }
 }
 module.exports = Video
